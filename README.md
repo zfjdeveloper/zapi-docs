@@ -1,7 +1,7 @@
 zapi-docs
 =========
 
-This is a repository to store ZAPI APIARY Docs. Here is the published [documentation](http://docs.getzephyr.apiary.io/#stepresultresourceapis). 
+This is a repository to store ZAPI APIARY Docs. Here is the published [documentation](http://docs.getzephyr.apiary.io). 
 
 Please feel free to leave comment next to corresponding API.
 

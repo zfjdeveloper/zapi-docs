@@ -1,0 +1,2970 @@
+HOST: http://localhost:2990/jira_server/rest/zapi/latest/
+
+--- Zephyr for JIRA REST API ---
+---
+Welcome to Zephyr for JIRA REST API documentation. Base URL (http://localhost:2990/jira_server/rest/zapi/latest/)
+---
+
+--
+Cycle Resource API(s)
+Following section describes rest resources (API's) pertaining to CycleResource
+--
+Retrieve a Test Cycle by it's id.
+
+PathParam: cycleId (id)*.
+GET /cycle/{id}
+{
+    "id": 1,
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 1,
+    "environment": "",
+    "description": "Audit Test Cycle",
+    "name": "Audit Test Cycle",
+    "versionId": 10000,
+    "projectId": 10000,
+    "build": ""
+}
+
+
+Retrieve all Test Cycles for a given version of the selected project.
+
+QueryParam(s): projectId\*, versionId\*, offset, expand [executionSummaries].
+GET /cycle
+> Content-Type: application/json
+{
+    "projectId": 10000,
+    "versionId": 10100,
+    "offset": 0,
+    "expand": "executionSummaries"
+}
+< 200
+< Content-Type: application/json
+{
+    "1": {
+        "startDate": "",
+        "endDate": "",
+        "projectId": 10000,
+        "build": "",
+        "totalExecutions": 1,
+        "totalExecuted": 1,
+        "environment": "",
+        "description": "Audit Test Cycle",
+        "executionSummaries": {
+            "executionSummary": [
+                {
+                    "count": 0,
+                    "statusKey": -1,
+                    "statusName": "UNEXECUTED",
+                    "statusColor": "#A0A0A0",
+                    "statusDescription": "The test has not yet been executed."
+                },
+                {
+                    "count": 1,
+                    "statusKey": 1,
+                    "statusName": "PASS",
+                    "statusColor": "#75B000",
+                    "statusDescription": "Test was executed and passed successfully."
+                },
+                {
+                    "count": 0,
+                    "statusKey": 2,
+                    "statusName": "FAIL",
+                    "statusColor": "#CC3300",
+                    "statusDescription": "Test was executed and failed."
+                },
+                {
+                    "count": 0,
+                    "statusKey": 3,
+                    "statusName": "WIP",
+                    "statusColor": "#F2B000",
+                    "statusDescription": "Test execution is a work-in-progress."
+                },
+                {
+                    "count": 0,
+                    "statusKey": 4,
+                    "statusName": "BLOCKED",
+                    "statusColor": "#6693B0",
+                    "statusDescription": "The test execution of this test was blocked for some reason."
+                }
+            ]
+        },
+        "name": "Audit Test Cycle",
+        "expand": "executionSummaries",
+        "versionId": 10000,
+        "started": ""
+    },
+    "2": {...},
+    "-1": {...},
+    "recordsCount": 3
+}    
+
+
+Exports a Test Cycle by it's id.
+
+PathParam: id\*.
+
+QueryParam(s): projectId, versionId.
+GET /cycle/{id}/export
+> Content-Type: application/json
+{
+    "projectId": 10000,
+    "versionId": 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "url": "http://localhost:2990/jira/plugins/servlet/export/exportAttachment?fileName=Cycle-Audit+Test+Cycle.csv"
+}
+
+
+Create a new Test Cycle. 
+
+(name\*, projectId\*, versionId\*)
+POST /cycle
+> Content-Type: application/json
+{
+    "clonedCycleId": "",
+    "name": "RC1",
+    "build": "",
+    "environment": "",
+    "description": "Released Cycle1",
+    "startDate": "17/Oct/13",
+    "endDate": "17/Jan/14",
+    "projectId": "10000",
+    "versionId": "10000"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": "10",
+    "responseMessage": "Cycle 10 created successfully."
+}
+
+
+Create a new Test Cycle by cloning the existing Test Cycle, specify the cycleId of the Test Cycle that needs to be cloned in clonedCycleId field.
+POST /cycle
+> Content-Type: application/json
+{
+    "clonedCycleId": "1",
+    "name": "CLONE - Audit Test Cycle",
+    "build": "",
+    "environment": "",
+    "description": "Audit Test Cycle",
+    "startDate": "18/Oct/13",
+    "endDate": "18/Oct/14",
+    "projectId": "10000",
+    "versionId": "10000"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": "15",
+    "responseMessage": "Cycle 15 created successfully."
+}
+
+
+Delete an existing Test Cycle by it's id.
+
+PathParam: id\*.
+DELETE /cycle/{id}
+> Content-Type: application/json
+{
+    "id": 12
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "Cycle 12 successfully deleted"
+}
+
+
+Update an existing Test Cycle.
+
+id\*
+PUT /cycle
+> Content-Type: application/json
+{
+    "id": "3",
+    "name": "Audit Test Cycle 2",
+    "build": "",
+    "environment": "",
+    "description": "Audit Test Cycle 2",
+    "startDate": "18/Oct/13",
+    "endDate": "18/Jan/14",
+    "projectId": "10000",
+    "versionId": "10000"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": "3",
+    "responseMessage": "Cycle 3 updated successfully."
+}
+
+
+Move Bulk Executions to Test Cycle by id.
+
+PathParam: id\*.
+PUT /cycle/{id}/move
+> Content-Type: application/json
+{
+    "executions": [
+        "14",
+        "13"
+    ],
+    "projectId": "10000",
+    "versionId": "10000",
+    "clearStatusFlag": true,
+    "clearDefectMappingFlag": true
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "14,13",
+    "projectMismatch": "-",
+    "versionMismatch": "-",
+    "invalid": "-",
+    "existing": ""
+}
+
+
+Copy Bulk Executions to Test Cycle by id.
+
+PathParam: id\*.
+PUT /cycle/{id}/copy
+> Content-Type: application/json
+{
+    "executions": [
+        "23",
+        "22",
+        "18"
+    ],
+    "projectId": "10000",
+    "versionId": "10000",
+    "clearStatusFlag": true,
+    "clearDefectMappingFlag": true
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "25",
+    "projectMismatch": "18",
+    "versionMismatch": "-",
+    "invalid": "-",
+    "existing": "23"
+}
+
+
+--
+Execution Resource API(s)
+Following section describes rest resources (API's) pertaining to ExecutionResource
+--
+
+Retrieve all Executions available by issueId.
+
+QueryParam(s): issueId*.
+GET /execution
+> Content-Type: application/json
+{
+    "issueId": 10001
+}
+< 200
+< Content-Type: application/json
+{
+    "status": {
+        "1": {
+            "id": 1,
+            "color": "#75B000",
+            "description": "Test was executed and passed successfully.",
+            "name": "PASS"
+        },
+        "2": {
+            "id": 2,
+            "color": "#CC3300",
+            "description": "Test was executed and failed.",
+            "name": "FAIL"
+        },
+        "3": {
+            "id": 3,
+            "color": "#F2B000",
+            "description": "Test execution is a work-in-progress.",
+            "name": "WIP"
+        },
+        "4": {
+            "id": 4,
+            "color": "#6693B0",
+            "description": "The test execution of this test was blocked for some reason.",
+            "name": "BLOCKED"
+        },
+        "-1": {
+            "id": -1,
+            "color": "#A0A0A0",
+            "description": "The test has not yet been executed.",
+            "name": "UNEXECUTED"
+        }
+    },
+    "issueId": 10001,
+    "executions": [
+        {
+            "id": 24,
+            "executionStatus": "1",
+            "executedOn": "Today 11:06 AM",
+            "executedBy": "admin",
+            "executedByDisplay": "admin",
+            "comment": "",
+            "htmlComment": "",
+            "cycleId": 13,
+            "cycleName": "CLONE - Audit Test Cycle 2",
+            "versionId": 10000,
+            "versionName": "v1",
+            "projectId": 10000,
+            "issueId": 10001,
+            "issueKey": "ZFJ-2",
+            "summary": "test1",
+            "label": "",
+            "component": "c1"
+        },
+        {
+            "id": 4,
+            "executionStatus": "1",
+            "executedOn": "Tuesday 1:40 PM",
+            "executedBy": "admin",
+            "executedByDisplay": "admin",
+            "comment": "",
+            "htmlComment": "",
+            "cycleId": 3,
+            "cycleName": "Audit Test Cycle 2",
+            "versionId": 10000,
+            "versionName": "v1",
+            "projectId": 10000,
+            "issueId": 10001,
+            "issueKey": "ZFJ-2",
+            "summary": "test1",
+            "label": "",
+            "component": "c1"
+        },
+        {
+            "id": 3,
+            "executionStatus": "-1",
+            "comment": "",
+            "htmlComment": "",
+            "cycleId": -1,
+            "cycleName": "Ad hoc",
+            "versionId": 10000,
+            "versionName": "v1",
+            "projectId": 10000,
+            "issueId": 10001,
+            "issueKey": "ZFJ-2",
+            "summary": "test1",
+            "label": "",
+            "component": "c1"
+        },
+        {
+            "id": 1,
+            "executionStatus": "1",
+            "executedOn": "04/Oct/13 3:23 PM",
+            "executedBy": "admin",
+            "executedByDisplay": "admin",
+            "comment": "",
+            "htmlComment": "",
+            "cycleId": 1,
+            "cycleName": "Audit Test Cycle",
+            "versionId": 10000,
+            "versionName": "v1",
+            "projectId": 10000,
+            "issueId": 10001,
+            "issueKey": "ZFJ-2",
+            "summary": "test1",
+            "label": "",
+            "component": "c1"
+        }
+    ],
+    "currentlySelectedExecutionId": "",
+    "recordsCount": 4
+}
+
+
+Retrieve all Executions available based on QueryParams.
+
+QueryParam(s): cycleId\*, action\*, offset, sorter, decorator, contentOnly, noTitle, projectId, versionId.
+GET /execution
+> Content-Type: application/json
+{
+    "action": "expand",
+    "contentOnly": "true",
+    "cycleId": 1,
+    "decorator": "none",
+    "noTitle": "true",
+    "offset": 0,
+    "projectId": 10000,
+    "sorter": "ID: DESC",
+    "versionId": "10000"
+}
+< 200
+< Content-Type: application/json
+{
+    "status": {
+        "1": {
+            "id": 1,
+            "color": "#75B000",
+            "description": "Test was executed and passed successfully.",
+            "name": "PASS"
+        },
+        "2": {
+            "id": 2,
+            "color": "#CC3300",
+            "description": "Test was executed and failed.",
+            "name": "FAIL"
+        },
+        "3": {
+            "id": 3,
+            "color": "#F2B000",
+            "description": "Test execution is a work-in-progress.",
+            "name": "WIP"
+        },
+        "4": {
+            "id": 4,
+            "color": "#6693B0",
+            "description": "The test execution of this test was blocked for some reason.",
+            "name": "BLOCKED"
+        },
+        "-1": {
+            "id": -1,
+            "color": "#A0A0A0",
+            "description": "The test has not yet been executed.",
+            "name": "UNEXECUTED"
+        }
+    },
+    "executions": [
+        {
+            "id": 1,
+            "executionStatus": "1",
+            "executedOn": "04/Oct/13 3:23 PM",
+            "executedBy": "admin",
+            "executedByDisplay": "admin",
+            "comment": "",
+            "htmlComment": "",
+            "cycleId": 1,
+            "cycleName": "Audit Test Cycle",
+            "versionId": 10000,
+            "versionName": "v1",
+            "projectId": 10000,
+            "issueId": 10001,
+            "issueKey": "ZFJ-2",
+            "summary": "test1",
+            "label": "",
+            "component": "c1"
+        }
+    ],
+    "currentlySelectedExecutionId": "",
+    "recordsCount": 1
+}
+
+Retrieve Execution details based on id.
+
+PathParam: id\*.
+GET /execution/{id}
+{
+    "id": 1,
+}
+< 200
+< Content-Type: application/json
+{
+    "execution": {
+        "id": 1,
+        "executionStatus": "1",
+        "executedOn": "04/Oct/13 3:23 PM",
+        "executedBy": "admin",
+        "executedByDisplay": "admin",
+        "defects": [
+            {
+                "key": "ZFJ-3",
+                "status": "Open",
+                "summary": "test1"
+            },
+            {
+                "key": "ZFJ-6",
+                "status": "Open",
+                "summary": "test4"
+            }
+        ],
+        "comment": "",
+        "htmlComment": "",
+        "cycleId": 1,
+        "cycleName": "Audit Test Cycle",
+        "versionId": 10000,
+        "versionName": "v1",
+        "projectId": 10000,
+        "issueId": 10001,
+        "issueKey": "ZFJ-2",
+        "summary": "test1",
+        "label": "",
+        "component": "c1"
+    }
+}
+
+Retrieve all defects based on id.
+
+PathParam: id\*.
+GET /execution/{id}/defects
+{
+    "id": 1,
+}
+< 200
+< Content-Type: application/json
+{
+    "1": {
+        "ZFJ-3": {
+            "key": "ZFJ-3",
+            "status": "Open",
+            "summary": "test1"
+        },
+        "ZFJ-6": {
+            "key": "ZFJ-6",
+            "status": "Open",
+            "summary": "test4"
+        }
+    }
+}
+
+
+Retrieve Execution count based on QueryParams.
+
+QueryParam(s): projectId, versionId, groupFld.
+GET /execution/count/
+> Content-Type: application/json
+{
+    "groupFld": "cycle",
+    "projectId": 10000,
+    "versionId": "10000"
+}
+< 200
+< Content-Type: application/json
+{
+    "groupFld": "cycle",
+    "statusSeries": {
+        "1": {
+            "id": 1,
+            "desc": "Test was executed and passed successfully.",
+            "color": "#75B000",
+            "name": "PASS"
+        },
+        "2": {
+            "id": 2,
+            "desc": "Test was executed and failed.",
+            "color": "#CC3300",
+            "name": "FAIL"
+        },
+        "3": {
+            "id": 3,
+            "desc": "Test execution is a work-in-progress.",
+            "color": "#F2B000",
+            "name": "WIP"
+        },
+        "4": {
+            "id": 4,
+            "desc": "The test execution of this test was blocked for some reason.",
+            "color": "#6693B0",
+            "name": "BLOCKED"
+        },
+        "-1": {
+            "id": -1,
+            "desc": "The test has not yet been executed.",
+            "color": "#A0A0A0",
+            "name": "UNEXECUTED"
+        }
+    },
+    "urlBase": "TBD",
+    "data": [
+        {
+            "id": 1,
+            "cnt": {
+                "1": 1,
+                "2": 0,
+                "3": 1,
+                "4": 0,
+                "total": 3,
+                "-1": 1
+            },
+            "name": "Audit Logs Test Cycle"
+        },
+        {
+            "id": 2,
+            "cnt": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "total": 3,
+                "-1": 3
+            },
+            "name": "Manage Filters"
+        },
+        {
+            "id": -1,
+            "cnt": {
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0,
+                "total": 0,
+                "-1": 0
+            },
+            "name": "Ad hoc"
+        }
+    ]
+}
+
+
+Retrieve Execution count based on QueryParams.
+
+QueryParam(s): projectId, daysPrevious, groupFld, periodName.
+GET /execution/count/
+> Content-Type: application/json
+{
+    "daysprevious": 30,
+    "periodName": "daily",
+    "projectId": 10000,
+    "groupFld":	"timePeriod"
+}
+< 200
+< Content-Type: application/json
+{
+    "data": {
+        "1371886384394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        },
+        "1371972784394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        },
+        "1372059184394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        },
+        "1372145584394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        },
+        "1372231984394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        },
+        "1372318384394": {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "total": 0,
+            "executed": 0,
+            "-1": 0
+        }
+    }
+}
+
+
+Retrieve status of indexing all executions.
+
+PathParam: token.
+GET /execution/indexStatus/{token}
+{
+    "token": "1382097941490"
+}
+< 200
+< Content-Type: application/json
+{
+    "took": "0 seconds",
+    "status": "completed"
+}
+
+Retrieve top Executions with defects based on duration (days).
+
+QueryParam(s): projectId, versionId, issueStatuses ["3|1|4"], howMany [10].
+GET /execution/topDefects
+> Content-Type: application/json
+{
+    "howMany": 5,
+    "issueStatuses": "3|1|4",
+    "projectId": 10000,
+    "versionId": -1
+}
+< 200
+< Content-Type: application/json
+{
+    "data": [
+        {
+            "defectId": 10104,
+            "defectKey": "ZFJ-7",
+            "defectSummary": "test1",
+            "defectStatus": "Open",
+            "testCount": 3,
+            "associatedTestIds": [
+                "10101",
+                "10105",
+                "10500"
+            ]
+        },
+        {
+            "defectId": 10103,
+            "defectKey": "ZFJ-6",
+            "defectSummary": "test2",
+            "defectStatus": "Open",
+            "testCount": 1,
+            "associatedTestIds": [
+                "10105"
+            ]
+        },
+        {
+            "defectId": 10107,
+            "defectKey": "ZFJ-10",
+            "defectSummary": "test3",
+            "defectStatus": "Open",
+            "testCount": 1,
+            "associatedTestIds": [
+                "10105"
+            ]
+        },
+        {
+            "defectId": 10200,
+            "defectKey": "ZFJ-11",
+            "defectSummary": "test4",
+            "defectStatus": "Open",
+            "testCount": 1,
+            "associatedTestIds": [
+                "10105"
+            ]
+        }
+    ]
+}
+
+
+Add Test to Test Cycle.
+POST /execution/addTestsToCycle/
+> Content-Type: application/json
+{
+    "issues": [
+        "ZFJ-6"
+    ],
+    "versionId": 10000,
+    "cycleId": "1",
+    "projectId": "10000",
+    "method": "1"
+}
+< 200
+< Content-Type: application/json
+{
+    "warn": "The following just happened: <br/> Tests added: <strong><a href='http://localhost:2990/jira/browse/ZFJ-6'>ZFJ-6</a></strong> <br/>
+    <p>These Tests could not be added <br/>
+        Invalid: <strong>-</strong> <br/> 
+        Belongs to another project: <strong>-</strong> <br/> 
+        Already present in this Test Cycle: <strong>-</strong><br/> 
+        Not a Test: <strong>-</strong><br/>"
+}
+
+
+Create a new Execution.
+POST /execution
+> Content-Type: application/json
+{
+    "issueId": 10600,
+    "versionId": "10000",
+    "cycleId": "16",
+    "projectId": 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "32": {
+        "id": 32,
+        "executionStatus": "-1",
+        "comment": "",
+        "htmlComment": "",
+        "cycleId": 16,
+        "cycleName": "Audit Test Cycle 3",
+        "versionId": 10000,
+        "versionName": "v1",
+        "projectId": 10000,
+        "issueId": 10600,
+        "issueKey": "ZFJ-19",
+        "summary": "test - check1",
+        "label": "",
+        "component": ""
+    }
+}
+
+
+Perform a quick Execution by id.
+
+PathParam: id\*.
+POST /execution/{id}/quickExecute
+> Content-Type: application/json
+{
+    "status": 3
+}
+< 200
+< Content-Type: application/json
+{
+    "27": {
+        "executedOn": "Today 12:51 PM",
+        "executedBy": "admin",
+        "executionId": 27
+    }
+}
+
+
+Index all Executions.
+POST /execution/indexAll
+< 200
+< Content-Type: application/json
+{
+    "token": 1382097614388
+}
+
+
+Reset Execution remote link values.
+POST /execution/refreshRemoteLinks/
+< 200
+
+
+Export Executions by zqlQuery.
+
+QueryParam(s): exportType, maxAllowedResult, expand, offset, zqlQuery, startIndex.
+POST /execution/export
+> Content-Type: application/json
+{
+    "expand": "teststeps",
+    "exportType": "xls",
+    "maxAllowedResult": "true",
+    "startIndex": 0,
+    "zqlQuery": "executionStatus != 'UNEXECUTED' AND executedBy = admin"
+}
+< 200
+< Content-Type: application/json
+{
+    "url": "http://localhost:2990/jira/plugins/servlet/export/exportAttachment?fileName=ZFJ-Executions-10-18-2013.xls"
+}
+
+Export Executions by zqlQuery and executions.
+
+QueryParam(s): exportType, maxAllowedResult, expand, offset, zqlQuery, startIndex.
+POST /execution/export
+> Content-Type: application/json
+{
+    "exportType": "xls",
+    "maxAllowedResult": "true",
+    "expand": "teststeps",
+    "startIndex": "0",
+    "zqlQuery": "executionDate >= '-2d'",
+    "executions": [
+        1,
+        27
+    ]
+}
+< 200
+< Content-Type: application/json
+{
+    "url": "http://localhost:2990/jira/plugins/servlet/export/exportAttachment?fileName=ZFJ-Executions-10-18-2013.xls"
+}
+
+
+Delete a Execution by its id.
+
+PathParam:  id\*.
+DELETE /execution/{id}
+{
+    "id": 32
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "Successfully deleted execution(s) 32"
+}
+
+
+Delete a bulk Executions.
+DELETE /execution/deleteExecutions
+< 200
+< Content-Type: application/json
+{
+    "success": "[15, 24]",
+    "error": "-"
+}
+
+
+Update bulk status of Executions.
+PUT /execution/updateBulkStatus
+> Content-Type: application/json
+{
+    "executions": [
+        "30",
+        "28"
+    ],
+    "status": "-1",
+    "stepStatus": "1"
+}
+< 200
+< Content-Type: application/json
+{
+    "error": "-",
+    "success": "All execution(s) were successfully updated."
+}
+
+
+Update bulk defects to Executions.
+PUT /execution/updateWithBulkDefects
+> Content-Type: application/json
+{
+    "executions": [
+        "24",
+        "21"
+    ],
+    "defects": [
+        "ZFJ-20"
+    ],
+    "detailedResponse": false
+}
+< 200
+{
+    "24": {},
+    "21": {}
+}
+
+Perform execution on a existing Execution by its id.
+
+PathParam: id\*.
+PUT /execution/{id}/execute
+> Content-Type: application/json
+{
+    "status": "1"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 4,
+    "executionStatus": "1",
+    "executedOn": "Today 6:21 PM",
+    "executedBy": "admin",
+    "executedByDisplay": "admin",
+    "comment": "",
+    "htmlComment": "",
+    "cycleId": 3,
+    "cycleName": "Audit Test Cycle 2",
+    "versionId": 10000,
+    "versionName": "v1",
+    "projectId": 10000,
+    "issueId": 10001,
+    "issueKey": "ZFJ-2",
+    "summary": "test1",
+    "label": "",
+    "component": "c1"
+}
+
+
+--
+Search Resource API(s)
+Following section describes the rest resources (API's) pertaining to SearchResource
+--
+Retrieve (Z)ephyr (Q)uery (L)anguage statements based on QueryParams.
+
+QueryParam(s): zqlQuery\*, expand, maxRecords, startIndex.
+GET /zql/executeSearch
+> Content-Type: application/json
+{
+    "expand": "executionStatus",
+    "maxRecords": 0,
+    "startIndex": 0,
+    "zqlQuery": "executionStatus != 'UNEXECUTED' AND executedBy = admin"
+}
+< 200
+< Content-Type: application/json
+{
+    "executions": [
+        {
+            "id": 24,
+            "cycleId": 13,
+            "cycleName": "CLONE - Audit Test Cycle 2",
+            "issueKey": "ZFJ-2",
+            "projectKey": "ZFJ",
+            "project": "ZFJ",
+            "priority": "Major",
+            "component": "c1",
+            "versionId": 10000,
+            "version": "v1",
+            "status": {
+                "id": 2,
+                "name": "FAIL",
+                "description": "Test was executed and failed.",
+                "color": "#CC3300",
+                "type": 0
+            },
+            "executedOn": "18/Oct/13",
+            "creationDate": "18/Oct/13",
+            "executedBy": "admin",
+            "executedByUserName": "admin"
+        },
+        {...},
+        {
+            "id": 1,
+            "cycleId": 1,
+            "cycleName": "Audit Test Cycle",
+            "issueKey": "ZFJ-2",
+            "projectKey": "ZFJ",
+            "project": "ZFJ",
+            "priority": "Major",
+            "component": "c1",
+            "versionId": 10000,
+            "version": "v1",
+            "status": {
+                "id": 1,
+                "name": "PASS",
+                "description": "Test was executed and passed successfully.",
+                "color": "#75B000",
+                "type": 0
+            },
+            "executedOn": "4/Oct/13",
+            "creationDate": "4/Oct/13",
+            "executedBy": "admin",
+            "executedByUserName": "admin"
+        }
+    ],
+    "executionStatuses": [
+        {
+            "id": 1,
+            "name": "PASS",
+            "description": "Test was executed and passed successfully.",
+            "color": "#75B000",
+            "type": 0
+        },
+        {
+            "id": 2,
+            "name": "FAIL",
+            "description": "Test was executed and failed.",
+            "color": "#CC3300",
+            "type": 0
+        },
+        {
+            "id": 3,
+            "name": "WIP",
+            "description": "Test execution is a work-in-progress.",
+            "color": "#F2B000",
+            "type": 0
+        },
+        {
+            "id": 4,
+            "name": "BLOCKED",
+            "description": "The test execution of this test was blocked for some reason.",
+            "color": "#6693B0",
+            "type": 0
+        },
+        {
+            "id": -1,
+            "name": "UNEXECUTED",
+            "description": "The test has not yet been executed.",
+            "color": "#A0A0A0",
+            "type": 0
+        }
+    ],
+    "stepExecutionStatuses": [
+        {
+            "id": 1,
+            "name": "PASS",
+            "description": "Test step was executed and passed successfully",
+            "color": "#75B000",
+            "type": 0
+        },
+        {
+            "id": 2,
+            "name": "FAIL",
+            "description": "Test step was executed and failed.",
+            "color": "#CC3300",
+            "type": 0
+        },
+        {
+            "id": 3,
+            "name": "WIP",
+            "description": "Test step execution is a work-in-progress.",
+            "color": "#F2B000",
+            "type": 0
+        },
+        {
+            "id": 4,
+            "name": "BLOCKED",
+            "description": "The Test step execution of this test was blocked for some reason.",
+            "color": "#6693B0",
+            "type": 0
+        },
+        {
+            "id": -1,
+            "name": "UNEXECUTED",
+            "description": "The Test step has not yet been executed.",
+            "color": "#A0A0A0",
+            "type": 0
+        }
+    ],
+    "offset": 0,
+    "currentIndex": 1,
+    "maxResultAllowed": 20,
+    "linksNew": [
+        1
+    ],
+    "totalCount": 10,
+    "executionIds": []
+}
+
+
+Retrieve ZQL clauses.
+GET /zql/clauses
+< 200
+< Content-Type: application/json
+{
+    "clauses": [
+        "issue",
+        "component",
+        "priority",
+        "project",
+        "executionStatus",
+        "executedBy",
+        "cycleName",
+        "executionDate",
+        "creationDate",
+        "execution",
+        "fixVersion"
+    ]
+}
+
+
+Retrieve ZQL fields, reserved words and functions.
+GET /zql/autoCompleteZQLJson
+< 200
+< Content-Type: application/json
+{
+    "jqlFieldZ": "[{\"value\":\"component\",\"displayName\":\"component\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\"],\"types\":[\"com.atlassian.jira.bc.project.component.ProjectComponent\"]},{\"value\":\"creationDate\",\"displayName\":\"creationDate\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\",\"<\",\"<=\",\">\",\">=\"],\"types\":[\"java.util.Date\"]},{\"value\":\"cycleName\",\"displayName\":\"cycleName\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\"],\"types\":[\"com.thed.zephyr.je.model.Cycle\"]},{\"value\":\"executedBy\",\"displayName\":\"executedBy\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\"],\"types\":[\"java.lang.String\"]},{\"value\":\"execution\",\"displayName\":\"execution\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\",\"<\",\"<=\",\">\",\">=\"],\"types\":[\"com.thed.zephyr.je.model.Schedule\"]},{\"value\":\"executionDate\",\"displayName\":\"executionDate\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\",\"<\",\"<=\",\">\",\">=\"],\"types\":[\"java.util.Date\"]},{\"value\":\"executionStatus\",\"displayName\":\"executionStatus\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\"],\"types\":[\"com.thed.zephyr.je.config.model.ExecutionStatus\"]},{\"value\":\"fixVersion\",\"displayName\":\"fixVersion\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"changed\",\"in\",\"was\",\"=\",\"!=\",\"not in\",\"<\",\"was not in\",\">\",\"<=\",\"was in\",\"is\",\"was not\",\">=\",\"is not\"],\"types\":[\"com.atlassian.jira.project.version.Version\"]},{\"value\":\"issue\",\"displayName\":\"issue\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\",\"<\",\"<=\",\">\",\">=\"],\"types\":[\"com.atlassian.jira.issue.Issue\"]},{\"value\":\"priority\",\"displayName\":\"priority\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\",\"<\",\"<=\",\">\",\">=\"],\"types\":[\"com.atlassian.jira.issue.priority.Priority\"]},{\"value\":\"project\",\"displayName\":\"project\",\"auto\":\"true\",\"orderable\":\"true\",\"searchable\":\"true\",\"operators\":[\"=\",\"!=\",\"in\",\"not in\",\"is\",\"is not\"],\"types\":[\"com.atlassian.jira.project.Project\"]}]",
+    "reservedWords": "[\"greater\",\"for\",\"privileges\",\"float\",\"validate\",\"distinct\",\"of\",\"break\",\"defaults\",\"byte\",\"initial\",\"file\",\"noaudit\",\"empty\",\"on\",\"false\",\"boolean\",\"right\",\"option\",\"decrement\",\"limit\",\"else\",\"increment\",\"fetch\",\"equals\",\"or\",\"number\",\"table\",\"like\",\"create\",\"row\",\"declare\",\"not\",\"trans\",\"asc\",\"start\",\"session\",\"then\",\"view\",\"strict\",\"explain\",\"go\",\"unique\",\"desc\",\"raise\",\"exclusive\",\"before\",\"next\",\"inout\",\"goto\",\"date\",\"nowait\",\"escape\",\"mode\",\"character\",\"rownum\",\"union\",\"encoding\",\"delete\",\"current\",\"whenever\",\"left\",\"do\",\"null\",\"end\",\"min\",\"trigger\",\"intersection\",\"define\",\"max\",\"previous\",\"integer\",\"sqrt\",\"return\",\"true\",\"checkpoint\",\"divide\",\"join\",\"access\",\"alter\",\"field\",\"delimiter\",\"string\",\"exists\",\"modulo\",\"having\",\"public\",\"insert\",\"abort\",\"uid\",\"to\",\"last\",\"grant\",\"count\",\"transaction\",\"synonym\",\"inner\",\"char\",\"drop\",\"rename\",\"collate\",\"by\",\"where\",\"long\",\"identified\",\"prior\",\"function\",\"changed\",\"revoke\",\"after\",\"remainder\",\"values\",\"more\",\"commit\",\"when\",\"any\",\"power\",\"notin\",\"returns\",\"avg\",\"index\",\"execute\",\"minus\",\"select\",\"int\",\"double\",\"size\",\"rows\",\"and\",\"difference\",\"input\",\"default\",\"isempty\",\"intersect\",\"column\",\"exec\",\"output\",\"cf\",\"update\",\"raw\",\"connect\",\"set\",\"catch\",\"sum\",\"object\",\"from\",\"add\",\"collation\",\"while\",\"was\",\"share\",\"order\",\"isnull\",\"if\",\"less\",\"between\",\"all\",\"with\",\"is\",\"check\",\"alias\",\"resource\",\"lock\",\"into\",\"modify\",\"audit\",\"as\",\"multiply\",\"in\",\"decimal\",\"begin\",\"subtract\",\"immediate\",\"outer\",\"continue\",\"group\",\"user\",\"rowid\",\"first\"]",
+    "functionZ": "[]"
+}
+
+
+--
+Attachment Resource API(s)
+Following section describes the rest resources (API's) pertaining to AttachmentResource
+--
+Retrieve attachment by Entity.
+
+QueryParam(s): entityId, entityType.
+GET /attachment/attachmentsByEntity
+> Content-Type: application/json
+{ 
+  "entityId": 13,
+  "entityType": "TESTSTEPRESULT"
+}
+< 200
+< Content-Type: application/json
+{
+    "data": [
+        {
+            "fileSize": "169916",
+            "fileId": "5",
+            "author": "admin",
+            "fileIcon": "image.gif",
+            "fileName": "config.png",
+            "dateCreated": "Today 11:10 AM",
+            "fileIconAltText": "PNG File"
+        }
+    ]
+}
+
+Retrieve attachment by Entity.
+
+QueryParam(s): entityId, entityType.
+GET /attachment/attachmentsByEntity
+> Content-Type: application/json
+{ 
+  "entityId": 13,
+  "entityType": "execution"
+}
+< 200
+< Content-Type: application/json
+{
+    "data": [
+        {
+            "fileSize": "266976",
+            "fileId": "1",
+            "author": "admin",
+            "fileIcon": "image.gif",
+            "fileName": "Image 5.png",
+            "dateCreated": "15/Oct/13 4:34 PM",
+            "fileIconAltText": "PNG File"
+        }
+    ]
+}
+
+
+Delete attachment by id\*.
+DELETE /attachment/{id}
+{ 
+  "id": 5
+}
+< 200
+{
+    "success": "Attachment config.png successfully deleted"
+}
+
+
+Add Attachment by Entity
+POST /attachment{?entityId,entityType}
+> Content-Type: multipart/form-data
+{ 
+  "entityId": 15,
+  "entityType": "EXECUTION"
+}
+< 200
+
+
+--
+Chart Resource API(s)
+Following section describes the rest resources pertaining to ChartResource
+--
+Retrieve Issue status(es) per Project.
+
+QueryParam(s): projectId.
+GET /zchart/issueStatuses
+> Content-Type: application/json
+{ 
+  "projectId": 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "IssueStatusesOptionsList": [
+        {
+            "value": "6",
+            "label": "Closed"
+        },
+        {
+            "value": "3",
+            "label": "In Progress"
+        },
+        {
+            "value": "1",
+            "label": "Open"
+        },
+        {
+            "value": "4",
+            "label": "Reopened"
+        },
+        {
+            "value": "5",
+            "label": "Resolved"
+        }
+    ]
+}
+
+Generate Tests CreatedData.
+
+QueryParam(s): daysPrevious, periodName, projectKey.
+GET /zchart/testsCreated
+> Content-Type: application/json
+{ 
+ "daysPrevious" : "30", 
+ "periodName" :	"daily",
+ "projectKey" :	"ZFJ"
+}
+< 200
+< Content-Type: application/json
+{
+    "TestsCreationMap": {
+        "1379743631889": 0,
+        "1379830031889": 0,
+        "1379916431889": 0,
+        "1380002831889": 0,
+        "1380089231889": 0,
+        "1380175631889": 0,
+        "1380262031889": 0,
+        "1380348431889": 0,
+        "1380434831889": 0,
+        "1380521231889": 0,
+        "1380607631889": 0,
+        "1380694031889": 0,
+        "1380780431889": 0,
+        "1380866831889": 1,
+        "1380953231889": 0,
+        "1381039631889": 0,
+        "1381126031889": 0,
+        "1381212431889": 0,
+        "1381298831889": 0,
+        "1381385231889": 6,
+        "1381471631889": 0,
+        "1381558031889": 0,
+        "1381644431889": 0,
+        "1381730831889": 0,
+        "1381817231889": 3,
+        "1381903631889": 1,
+        "1381990031889": 1,
+        "1382076431889": 0,
+        "1382162831889": 0,
+        "1382249231889": 0,
+        "1382335631889": 0
+    },
+    "TestsCreationCount": 12,
+    "TestsCreationPeriod": 30
+}
+
+--
+Execution Filter Resource API(s)
+Following section describes the rest resources (API's) pertaining to ExecutionFilterResource
+--
+Retrieve an execution filter by id.
+
+PathParam: id\*.
+GET /zql/executionFilter/{id}
+{
+    "id": 20,
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 20,
+    "creationDate": 1382085360222,
+    "executionCount": 5,
+    "createdBy": "admin",
+    "query": "executionStatus != \"UNEXECUTED\"",
+    "description": "",
+    "isFavorite": true,
+    "filterName": "Execution Filter 9",
+    "sharePerm": 1,
+    "popularity": 1
+}
+
+Retrieve all execution filters by QueryParams.
+
+QueryParam(s): byUser: [true|false], fav: [true|false], offset, maxRecords.
+GET /zql/executionFilter/
+> Content-Type: application/json
+{
+    "byUser": true,
+    "fav": true,
+    "offset": 0,
+    "maxRecords": 10
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "creationDate": 1374144921687,
+        "desc": "Executions by Project",
+        "scheduleCount": 1,
+        "createdBy": "admin",
+        "query": "Project= \"BlueZ\" AND CycleName = \"Audit Test Cycle\"",
+        "isFavorite": true,
+        "id": 2,
+        "filterName": "Executions by Project"
+    },
+    {
+        "creationDate": 1374157031104,
+        "desc": "Executions by Component",
+        "scheduleCount": 1,
+        "createdBy": "admin",
+        "query": "Component = \"Audit Impl\" AND CycleName = \"Audit Logs Test Cycle\" ",
+        "isFavorite": true,
+        "id": 3,
+        "filterName": "Executions by Component"
+    }
+]
+
+Retrieve the logged in user.
+GET /zql/executionFilter/user
+< 200
+< Content-Type: application/json
+{
+    "LOGGED_IN_USER": "admin"
+}
+
+Retrieve all execution filters by QueryParams.
+
+QueryParam(s): filterName, owner, sharePerm[0|1|-1].
+
+(sharePerm: 0 - private execution filters, 1 - global execution filters, -1 - All private and global execution filters)
+GET /zql/executionFilter/search
+> Content-Type: application/json
+{ 
+  "filterName": "All exec tests",
+  "owner" : "mike",
+  "sharePerm":	1
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 9,
+        "creationDate": 1381822961990,
+        "currentIndex": 1,
+        "executionCount": 5,
+        "createdBy": "admin",
+        "maxResultAllowed": 20,
+        "totalCount": 8,
+        "query": "executionStatus != \"UNEXECUTED\"",
+        "description": "",
+        "isFavorite": true,
+        "filterName": "All exec tests",
+        "linksNew": [],
+        "sharePerm": 1,
+        "popularity": 1
+    },
+    {
+        "id": 27,
+        "creationDate": 1382085416677,
+        "currentIndex": 1,
+        "executionCount": 5,
+        "createdBy": "admin",
+        "maxResultAllowed": 20,
+        "totalCount": 8,
+        "query": "executionStatus != \"UNEXECUTED\"",
+        "description": "",
+        "isFavorite": true,
+        "filterName": "All exec tests 2",
+        "linksNew": [],
+        "sharePerm": 1,
+        "popularity": 1
+    }
+]
+
+Performs a quick search over all execution filters by it's name.
+
+QueryParam(s): query.
+GET /zql/executionFilter/quickSearch
+> Content-Type: application/json
+{ 
+  "query": "exec"
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 9,
+        "creationDate": 1381822961990,
+        "createdBy": "admin",
+        "query": "executionStatus != \"UNEXECUTED\"",
+        "description": "",
+        "filterName": "Execution Filter1"
+    },
+    {
+        "id": 27,
+        "creationDate": 1382085416677,
+        "createdBy": "admin",
+        "query": "executionStatus != \"UNEXECUTED\"",
+        "description": "",
+        "filterName": "Execution Filter2"
+    }
+]
+
+
+Create a new execution filter.
+
+query\*, filterName\*
+POST /zql/executionFilter/
+> Content-Type: application/json
+{
+    "query": "executionStatus != \"UNEXECUTED\" AND executedBy = admin AND project = ZFJ",
+    "filterName": "Execution Filter by Project",
+    "description": "Execution Filter by Project",
+    "isFavorite": true,
+    "sharePerm": "1"
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter created successfully."
+}
+
+Create a new execution filter.
+
+query\*, filterName\*
+POST /zql/executionFilter/
+> Content-Type: application/json
+{
+    "query": "executionDate >= '-2d",
+    "filterName": "executed in last 2days"
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter created successfully."
+}
+
+
+Remove an execution filter by id.
+
+PathParam: id\*.
+DELETE /zql/executionFilter/{id}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter deleted successfully."
+}
+
+Copy the selected Execution Filter.
+
+id\*, filterName\*
+PUT /zql/executionFilter/copy
+> Content-Type: application/json
+{
+    "id": 27,
+    "filterName": "Copy of Execution Filter"
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter copied successfully."
+}
+
+
+Copy the selected Execution Filter.
+
+id\*, filterName\*, isFavorite, sharePerm.
+PUT /zql/executionFilter/copy
+> Content-Type: application/json
+{
+    "id": 27,
+    "filterName": "Copy of Execution Filter",
+    "isFavorite": false,
+    "sharePerm": 2
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter copied successfully."
+}
+
+
+Update an execution filter.
+
+id\*
+PUT /zql/executionFilter/update
+> Content-Type: application/json
+{
+    "id": 29,
+    "filterName": "Execution Filter by Project",
+    "description": "",
+    "isFavorite": true,
+    "sharePerm": "1"
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter updated successfully."
+}
+
+
+Rename an execution filter.
+
+id\*
+PUT /zql/executionFilter/rename
+> Content-Type: application/json
+{
+    "id": 28,
+    "filterName": "Execution Filter"
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "ZQL Filter renamed successfully."
+}
+
+
+Add/Remove an execution filter to/from Favorite.
+
+id\*
+PUT /zql/executionFilter/toggleFav
+> Content-Type: application/json
+{
+    "isFavorite": false,
+    "id": 30
+}
+< 200
+< Content-Type: application/json
+{
+    "success": "Favorite status toggled successfully."
+}
+
+--
+Execution Filter Auto Complete Resource API(s)
+Following section describes rest resources (API's) pertaining to ExecutionFilteAutoCompleteResource
+--
+Retrieve values for autocomplete textbox based on fieldName. 
+
+QueryParam(s): fieldName\*, fieldValue.
+GET /zql/autocomplete
+> Content-Type: application/json
+{ 
+ "fieldName": "priority",
+ "fieldValue":
+}
+< 200
+< Content-Type: application/json
+{
+    "results": [
+        {
+            "value": "Blocker",
+            "displayName": "Blocker"
+        },
+        {
+            "value": "Critical",
+            "displayName": "Critical"
+        },
+        {
+            "value": "Major",
+            "displayName": "Major"
+        },
+        {
+            "value": "Minor",
+            "displayName": "Minor"
+        },
+        {
+            "value": "Trivial",
+            "displayName": "Trivial"
+        }
+    ]
+}
+
+
+Retrieve values for autocomplete textbox based on fieldName. 
+
+QueryParam(s): fieldName\*, fieldValue.
+GET /zql/autocomplete
+> Content-Type: application/json
+{ 
+ "fieldName": "executionStatus",
+ "fieldValue":
+}
+< 200
+< Content-Type: application/json
+{
+    "results": [
+        {
+            "value": "PASS",
+            "displayName": "PASS"
+        },
+        {
+            "value": "FAIL",
+            "displayName": "FAIL"
+        },
+        {
+            "value": "WIP",
+            "displayName": "WIP"
+        },
+        {
+            "value": "BLOCKED",
+            "displayName": "BLOCKED"
+        },
+        {
+            "value": "UNEXECUTED",
+            "displayName": "UNEXECUTED"
+        }
+    ]
+}
+
+
+--
+License Resource API(s)
+Following section describes the rest resources (API's) pertaining to Zephyr for JIRA LicenseResource
+--
+Retrieve License Details.
+GET /license
+> Content-Type: application/json
+< 200
+< Content-Type: application/json
+{
+    "customerId": "XYZ",
+    "expDateFormatted": "31/Dec/13 6:30 PM",
+    "expDate": 1388494800000,
+    "isEval": "false",
+    "licenseInformation": "Plugin license for Zephyr testing<br/><small>Support available until (<strong>31/Dec/13 6:30 PM </strong>)</small>"
+}
+
+--
+UTIL Resource API(s)
+Following section describes the rest resources related to common utility API(s)
+--
+Retrieve all Projects.
+GET /util/project-list
+> Content-Type: application/json
+< 200
+< Content-Type: application/json
+{
+    "options": [
+        {
+            "value": "10000",
+            "label": "ZFJ"
+        },
+        {
+            "value": "10100",
+            "label": "Введите"
+        }
+    ]
+}
+
+Retrieve all Versions based on QueryParams.
+
+QueryParam(s): projectId, versionId, showUnscheduled.
+GET /util/versionBoard-list
+> Content-Type: application/json
+{
+    "projectId": 10000,
+    "showUnscheduled": false
+}
+< 200
+< Content-Type: application/json
+{
+    "versionOptions": [
+        {
+            "value": "-1",
+            "label": "Unscheduled"
+        },
+        {
+            "value": "10000",
+            "label": "v1"
+        },
+        {
+            "value": "10100",
+            "label": "Разрешенный"
+        }
+    ]
+}
+
+
+Retrieve Miscellaneous Data i.e. Execution Statuses, Priorities, Components.
+
+QueryParam(s): projectId*.
+GET /util/cycleCriteriaInfo
+{ 
+ 'projectId' : 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "components": [
+        {
+            "id": 10000,
+            "name": "c1"
+        },
+        {
+            "id": 10100,
+            "name": "целый"
+        }
+    ],
+    "priorities": [
+        {
+            "id": "1",
+            "desc": "Blocks development and/or testing work, production could not run.",
+            "name": "Blocker"
+        },
+        {
+            "id": "2",
+            "desc": "Crashes, loss of data, severe memory leak.",
+            "name": "Critical"
+        },
+        {
+            "id": "3",
+            "desc": "Major loss of function.",
+            "name": "Major"
+        },
+        {
+            "id": "4",
+            "desc": "Minor loss of function, or other problem where easy workaround is present.",
+            "name": "Minor"
+        },
+        {
+            "id": "5",
+            "desc": "Cosmetic problem like misspelt words or misaligned text.",
+            "name": "Trivial"
+        }
+    ],
+    "labels": [
+        {
+            "id": "Label1",
+            "name": "Label1"
+        }
+    ],
+    "issueStatuses": [
+        {
+            "id": "6",
+            "name": "Closed"
+        },
+        {
+            "id": "3",
+            "name": "In Progress"
+        },
+        {
+            "id": "1",
+            "name": "Open"
+        },
+        {
+            "id": "4",
+            "name": "Reopened"
+        },
+        {
+            "id": "5",
+            "name": "Resolved"
+        }
+    ],
+    "executionStatuses": [
+        {
+            "id": -1,
+            "desc": "The test has not yet been executed.",
+            "color": "#A0A0A0",
+            "name": "UNEXECUTED"
+        },
+        {
+            "id": 1,
+            "desc": "Test was executed and passed successfully.",
+            "color": "#75B000",
+            "name": "PASS"
+        },
+        {
+            "id": 2,
+            "desc": "Test was executed and failed.",
+            "color": "#CC3300",
+            "name": "FAIL"
+        },
+        {
+            "id": 3,
+            "desc": "Test execution is a work-in-progress.",
+            "color": "#F2B000",
+            "name": "WIP"
+        },
+        {
+            "id": 4,
+            "desc": "The test execution of this test was blocked for some reason.",
+            "color": "#6693B0",
+            "name": "BLOCKED"
+        }
+    ]
+}
+
+
+Retrieve all Test executionStatus(es).
+GET /util/testExecutionStatus
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 1,
+        "name": "PASS",
+        "description": "Test was executed and passed successfully.",
+        "color": "#75B000",
+        "type": 0
+    },
+    {
+        "id": 2,
+        "name": "FAIL",
+        "description": "Test was executed and failed.",
+        "color": "#CC3300",
+        "type": 0
+    },
+    {
+        "id": 3,
+        "name": "WIP",
+        "description": "Test execution is a work-in-progress.",
+        "color": "#F2B000",
+        "type": 0
+    },
+    {
+        "id": 4,
+        "name": "BLOCKED",
+        "description": "The test execution of this test was blocked for some reason.",
+        "color": "#6693B0",
+        "type": 0
+    },
+    {
+        "id": -1,
+        "name": "UNEXECUTED",
+        "description": "The test has not yet been executed.",
+        "color": "#A0A0A0",
+        "type": 0
+    }
+]
+
+
+Retrieve all TeststepResult executionStatus(es).
+GET /util/teststepExecutionStatus
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 1,
+        "name": "PASS",
+        "description": "Test step was executed and passed successfully",
+        "color": "#75B000",
+        "type": 0
+    },
+    {
+        "id": 2,
+        "name": "FAIL",
+        "description": "Test step was executed and failed.",
+        "color": "#CC3300",
+        "type": 0
+    },
+    {
+        "id": 3,
+        "name": "WIP",
+        "description": "Test step execution is a work-in-progress.",
+        "color": "#F2B000",
+        "type": 0
+    },
+    {
+        "id": 4,
+        "name": "BLOCKED",
+        "description": "The Test step execution of this test was blocked for some reason.",
+        "color": "#6693B0",
+        "type": 0
+    },
+    {
+        "id": -1,
+        "name": "UNEXECUTED",
+        "description": "The Test step has not yet been executed.",
+        "color": "#A0A0A0",
+        "type": 0
+    }
+]
+
+
+Retrieve all dashboards.
+GET /util/dashboard
+< 200
+[
+    {
+        "id": 10000,
+        "name": "System Dashboard"
+    },
+    {
+        "id": 10400,
+        "name": "ZFJ Dashboard"
+    }
+]
+
+
+Retrieve dashboard(s) by name.
+
+QueryParams: name, limit [15].
+GET /util/dashboard
+> Content-Type: application/json
+{
+   "name": "System Dashboard",
+   "limit": 10
+}
+< 200
+[
+    {
+        "id": 10000,
+        "name": "System Dashboard"
+    }
+]
+
+
+--
+Testcase Resource API(s)
+Following section describes rest resources pertaining to TestcaseResource
+--
+
+Retrieve Test counts by QueryParams.
+
+QueryParam(s): projectId\*, versionId, groupFld ("user" | "component") defaults to ["user"].
+GET /test/count
+> Content-Type: application/json
+{
+    "groupFld": "component",
+    "projectId": 10000,
+    "versionId": 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "groupFld": "component",
+    "urlBase": "TBD",
+    "data": [
+        {
+            "id": 10000,
+            "cnt": 0,
+            "name": "Audit Logs Impl"
+        },
+        {
+            "id": 10001,
+            "cnt": 0,
+            "name": "Manage Filters Impl"
+        },
+        {
+            "id": -1,
+            "cnt": 0,
+            "name": "No Component"
+        }
+    ]
+}
+
+
+Retrieve Test counts by QueryParams.
+
+QueryParam(s): projectId\*, versionId, groupFld ("user" | "component") defaults to ["user"].
+GET /test/count
+> Content-Type: application/json
+{
+    "groupFld": "user",
+    "projectId": 10000,
+    "versionId": 10000
+}
+< 200
+< Content-Type: application/json
+{
+    "groupFld": "user",
+    "urlBase": "TBD",
+    "data": [
+        {
+            "id": "admin",
+            "cnt": 12,
+            "name": "admin"
+        }
+    ]
+}
+
+
+Retrieve Test by saved search filter id.
+
+PathParam: id\*.
+GET /test/mySearches/{id}/
+{
+    "id": 10100,
+}
+< 200
+< Content-Type: application/json
+{
+    "count": 12
+}
+
+
+--
+TestStep Resource API(s)
+Following section describes the rest resources pertaining to TestStepResource
+--
+
+Retrieve Teststeps by issueId.
+
+PathParam: issueId*.
+GET /teststep/{issueId}/
+{
+    "issueId": 10105
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 4,
+        "orderId": 1,
+        "step": "step1",
+        "data": "username",
+        "result": "success",
+        "htmlStep": "step1",
+        "htmlData": "username",
+        "htmlResult": "success"
+    }
+]
+
+
+Retrieve Teststeps by issueId and testStep id.
+
+PathParam: issueId\*, id\*.
+GET /teststep/{issueId}/{id}
+{
+    "id": 4,
+    "issueId": 10105
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 4,
+    "orderId": 1,
+    "step": "step1",
+    "data": "username",
+    "result": "success",
+    "htmlStep": "step1",
+    "htmlData": "username",
+    "htmlResult": "success"
+}
+
+
+Create a Teststep for issueId.
+
+PathParam: issueId\*.
+POST /teststep/{issueId}
+> Content-Type: application/json
+{
+    "step": "validate username",
+    "data": "username",
+    "result": "success"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 10,
+    "orderId": 1,
+    "step": "validate username",
+    "data": "username",
+    "result": "success",
+    "htmlStep": "validate username",
+    "htmlData": "username",
+    "htmlResult": "success"
+}
+
+
+Moves a Teststep by teststep id and issueId with position/after. 
+
+PathParam: issueId\*, id\*.
+POST /teststep/{issueId}/{id}/move
+> Content-Type: application/json
+{
+    "position": "First"
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 21,
+        "orderId": 1,
+        "step": "Validate password",
+        "data": "password",
+        "result": "success",
+        "htmlStep": "Validate password",
+        "htmlData": "password",
+        "htmlResult": "success"
+    },
+    {
+        "id": 20,
+        "orderId": 2,
+        "step": "Validate email",
+        "data": "email",
+        "result": "success",
+        "htmlStep": "Validate email",
+        "htmlData": "email",
+        "htmlResult": "success"
+    },
+    {
+        "id": 19,
+        "orderId": 3,
+        "step": "Validate username",
+        "data": "username",
+        "result": "success",
+        "htmlStep": "Validate username",
+        "htmlData": "username",
+        "htmlResult": "success"
+    }
+]
+
+
+Moves a Teststep by teststep id and issueId with position/after. 
+
+PathParam: issueId\*, id\*.
+POST /teststep/{issueId}/{id}/move
+> Content-Type: application/json
+{
+    "after": "/jira/rest/zephyr/latest/teststep/10103/21"
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 19,
+        "orderId": 1,
+        "step": "Validate username",
+        "data": "username",
+        "result": "success",
+        "htmlStep": "Validate username",
+        "htmlData": "username",
+        "htmlResult": "success"
+    },
+    {
+        "id": 21,
+        "orderId": 2,
+        "step": "Validate password",
+        "data": "password",
+        "result": "success",
+        "htmlStep": "Validate password",
+        "htmlData": "password",
+        "htmlResult": "success"
+    },
+    {
+        "id": 20,
+        "orderId": 3,
+        "step": "Validate email",
+        "data": "email",
+        "result": "success",
+        "htmlStep": "Validate email",
+        "htmlData": "email",
+        "htmlResult": "success"
+    }
+]
+
+
+Delete a Teststep by pathParam issueId and testStep id
+
+PathParam: issueId\*, id\*.
+DELETE /teststep/{issueId}/{id}
+> Content-Type: application/json
+{
+    "id": 14
+}
+< 200
+
+
+Update Teststep by issueId and testStep id.
+
+PathParam: issueId, id\*.
+PUT /teststep/{issueId}/{id}
+> Content-Type: application/json
+{
+    "id": 15,
+    "step": "validate username",
+    "data": "username",
+    "result": "success"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 15,
+    "orderId": 1,
+    "step": "validate username",
+    "data": "username",
+    "result": "success",
+    "htmlStep": "validate username",
+    "htmlData": "username",
+    "htmlResult": "success "
+}
+
+
+--
+StepResult Resource API(s)
+Following section describes the rest resources pertaining to StepResultResource
+--
+
+Retrieve Stepresults by QueryParams.
+
+QueryParam(s): executionId\*, expand.
+GET /stepResult
+> Content-Type: application/json
+{
+    "expand": "executionStatus",
+    "executionId": 34
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "id": 28,
+        "executedOn": 1382359263886,
+        "status": "1",
+        "htmlComment": "",
+        "executedBy": "admin",
+        "executionId": 34,
+        "stepId": 10,
+        "executionStatus": [
+            {
+                "id": 1,
+                "name": "PASS",
+                "description": "Test step was executed and passed successfully",
+                "color": "#75B000",
+                "type": 0
+            },
+            {
+                "id": 2,
+                "name": "FAIL",
+                "description": "Test step was executed and failed.",
+                "color": "#CC3300",
+                "type": 0
+            },
+            {
+                "id": 3,
+                "name": "WIP",
+                "description": "Test step execution is a work-in-progress.",
+                "color": "#F2B000",
+                "type": 0
+            },
+            {
+                "id": 4,
+                "name": "BLOCKED",
+                "description": "The Test step execution of this test was blocked for some reason.",
+                "color": "#6693B0",
+                "type": 0
+            },
+            {
+                "id": -1,
+                "name": "UNEXECUTED",
+                "description": "The Test step has not yet been executed.",
+                "color": "#A0A0A0",
+                "type": 0
+            }
+        ],
+        "defects": []
+    },
+    {
+        "id": 29,
+        "executedOn": 1382359267300,
+        "status": "1",
+        "htmlComment": "",
+        "executedBy": "admin",
+        "executionId": 34,
+        "stepId": 11,
+        "executionStatus": [
+            {
+                "id": 1,
+                "name": "PASS",
+                "description": "Test step was executed and passed successfully",
+                "color": "#75B000",
+                "type": 0
+            },
+            {
+                "id": 2,
+                "name": "FAIL",
+                "description": "Test step was executed and failed.",
+                "color": "#CC3300",
+                "type": 0
+            },
+            {
+                "id": 3,
+                "name": "WIP",
+                "description": "Test step execution is a work-in-progress.",
+                "color": "#F2B000",
+                "type": 0
+            },
+            {
+                "id": 4,
+                "name": "BLOCKED",
+                "description": "The Test step execution of this test was blocked for some reason.",
+                "color": "#6693B0",
+                "type": 0
+            },
+            {
+                "id": -1,
+                "name": "UNEXECUTED",
+                "description": "The Test step has not yet been executed.",
+                "color": "#A0A0A0",
+                "type": 0
+            }
+        ],
+        "defects": []
+    },
+    {
+        "id": 30,
+        "executedOn": 1382359269820,
+        "status": "1",
+        "htmlComment": "",
+        "executedBy": "admin",
+        "executionId": 34,
+        "stepId": 12,
+        "executionStatus": [
+            {
+                "id": 1,
+                "name": "PASS",
+                "description": "Test step was executed and passed successfully",
+                "color": "#75B000",
+                "type": 0
+            },
+            {
+                "id": 2,
+                "name": "FAIL",
+                "description": "Test step was executed and failed.",
+                "color": "#CC3300",
+                "type": 0
+            },
+            {
+                "id": 3,
+                "name": "WIP",
+                "description": "Test step execution is a work-in-progress.",
+                "color": "#F2B000",
+                "type": 0
+            },
+            {
+                "id": 4,
+                "name": "BLOCKED",
+                "description": "The Test step execution of this test was blocked for some reason.",
+                "color": "#6693B0",
+                "type": 0
+            },
+            {
+                "id": -1,
+                "name": "UNEXECUTED",
+                "description": "The Test step has not yet been executed.",
+                "color": "#A0A0A0",
+                "type": 0
+            }
+        ],
+        "defects": []
+    }
+]
+
+Retrieve Stepresult by id.
+
+PathParam: id\*.
+
+QueryParam(s): expand. 
+GET /stepResult/{id}
+{
+    "expand": "executionStatus"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 3,
+    "executedOn": 1380880581896,
+    "status": "1",
+    "htmlComment": "",
+    "executedBy": "admin",
+    "executionId": 3,
+    "stepId": 1,
+    "executionStatus": [
+        {
+            "id": 1,
+            "name": "PASS",
+            "description": "Test step was executed and passed successfully",
+            "color": "#75B000",
+            "type": 0
+        },
+        {
+            "id": 2,
+            "name": "FAIL",
+            "description": "Test step was executed and failed.",
+            "color": "#CC3300",
+            "type": 0
+        },
+        {
+            "id": 3,
+            "name": "WIP",
+            "description": "Test step execution is a work-in-progress.",
+            "color": "#F2B000",
+            "type": 0
+        },
+        {
+            "id": 4,
+            "name": "BLOCKED",
+            "description": "The Test step execution of this test was blocked for some reason.",
+            "color": "#6693B0",
+            "type": 0
+        },
+        {
+            "id": -1,
+            "name": "UNEXECUTED",
+            "description": "The Test step has not yet been executed.",
+            "color": "#A0A0A0",
+            "type": 0
+        }
+    ],
+    "defects": []
+}
+
+
+Retrieve step defects for a Stepresult by stepResult id and executionId.
+
+PathParam: id\*.
+
+QueryParam: executionId.
+GET /stepResult/{id}/defects
+> Content-Type: application/json
+{    
+    "executionId": 	34
+}
+< 200
+< Content-Type: application/json
+{
+    "28": {
+        "ZFJ-21": {
+            "key": "ZFJ-21",
+            "status": "Open",
+            "summary": "test - check - steps"
+        }
+    }
+}
+
+
+Create a quick stepResult by id.
+
+PathParam: id\*.
+POST /stepResult/{id}/quickExecute
+> Content-Type: application/json
+{
+    "status": 1
+}
+< 200
+< Content-Type: application/json
+{
+    "27": {
+        "executedOn": "Today 12:51 PM",
+        "executedBy": "admin",
+        "executionId": 27
+    }
+}
+
+
+Update a Stepresult by stepResult id.
+
+PathParam: id\*.
+PUT /stepResult/{id}
+> Content-Type: application/json
+{
+    "id": 28,
+    "issueId": "10100",
+    "executionId": 34,
+    "status": "1",
+    "defectList": [
+        "ZFJ-3"
+    ],
+    "updateDefectList": "true"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": 28,
+    "htmlComment": "",
+    "executedBy": "admin",
+    "status": "1",
+    "executionId": 34,
+    "comment": "",
+    "stepId": 10
+}
+
+
+--
+FilterPicker Resource API(s)
+Following section describes the rest resources pertaining to FilterPickerResource
+--
+
+Retrieve any saved test search filters.
+GET /picker/filters
+< 200
+< Content-Type: application/json
+{
+    "id": "filt-1",
+    "label": "Filter Search",
+    "type": "optgroup",
+    "weight": "0",
+    "options": [
+        {
+            "id": "10100",
+            "label": "Test Filter1",
+            "value": "Test Filter1",
+            "type": "option",
+            "icon": ""
+        },
+        {
+            "id": "10000",
+            "label": "Test Filter2",
+            "value": "Test Filter2",
+            "type": "option",
+            "icon": ""
+        }
+    ]
+}
+
+Retrieve any saved test search filters by query.
+
+QueryParam(s): query.
+GET /picker/filters
+> Content-Type: application/json
+{
+    "query": "test"
+}
+< 200
+< Content-Type: application/json
+{
+    "id": "filt-1",
+    "label": "Filter Search",
+    "type": "optgroup",
+    "weight": "0",
+    "options": [
+        {
+            "id": "10100",
+            "label": "Test Filter",
+            "value": "Test Filter",
+            "type": "option",
+            "icon": ""
+        }
+    ]
+}
+
+--
+IssuePicker Resource API(s)
+Following section describes the rest resources pertaining to IssuePickerResource
+--
+
+Retrieve Test Issues.
+GET /issues
+< 200
+< Content-Type: application/json
+{
+    "sections": [
+        {
+            "label": "History Search",
+            "sub": "Showing 9 of 9 matching issues",
+            "id": "hs",
+            "issues": [
+                {
+                    "key": "ZFJ-6",
+                    "keyHtml": "ZFJ-6",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test4",
+                    "summaryText": "test4"
+                },
+                {
+                    "key": "ZFJ-22",
+                    "keyHtml": "ZFJ-22",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test - check - attachement",
+                    "summaryText": "test - check - attachement"
+                },
+                {
+                    "key": "ZFJ-2",
+                    "keyHtml": "ZFJ-2",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test1",
+                    "summaryText": "test1"
+                },
+                {
+                    "key": "SD-3",
+                    "keyHtml": "SD-3",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test - check - steps",
+                    "summaryText": "test - check - steps"
+                },
+                {
+                    "key": "ZFJ-3",
+                    "keyHtml": "ZFJ-3",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test1",
+                    "summaryText": "test1"
+                },
+                {
+                    "key": "ZFJ-15",
+                    "keyHtml": "ZFJ-15",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test-15/10",
+                    "summaryText": "test-15/10"
+                },
+                {
+                    "key": "SD-2",
+                    "keyHtml": "SD-2",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": " Введите - 1",
+                    "summaryText": " Введите - 1"
+                },
+                {
+                    "key": "SD-1",
+                    "keyHtml": "SD-1",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "Введите",
+                    "summaryText": "Введите"
+                },
+                {
+                    "key": "ZFJ-4",
+                    "keyHtml": "ZFJ-4",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "test2",
+                    "summaryText": "test2"
+                }
+            ]
+        }
+    ]
+}
+
+
+Retrieve Test Issues by QueryParams.
+
+QueryParam(s): query, currentJQL, currentIssueKey, currentProjectId, showSubTasks, showSubTaskParent
+GET /issues
+> Content-Type: application/json
+{
+    "currentIssueKey": ,
+    "currentJQL": "type=Test",
+    "currentProjectId": 10000,
+    "query": "test"
+}
+< 200
+< Content-Type: application/json
+{
+    "sections": [
+        {
+            "label": "History Search",
+            "sub": "Showing 2 of 2 matching issues",
+            "id": "hs",
+            "issues": [
+                {
+                    "key": "ZFJ-8",
+                    "keyHtml": "ZFJ-8",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "<b>test1</b>",
+                    "summaryText": "test1"
+                },
+                {
+                    "key": "ZFJ-7",
+                    "keyHtml": "ZFJ-7",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "<b>test2</b>",
+                    "summaryText": "test2"
+                }
+            ]
+        },
+        {
+            "label": "Current Search",
+            "sub": "Showing 2 of 2 matching issues",
+            "id": "cs",
+            "issues": [
+                {
+                    "key": "ZFJ-7",
+                    "keyHtml": "ZFJ-7",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "<b>test1</b>",
+                    "summaryText": "test1"
+                },
+                {
+                    "key": "ZFJ-8",
+                    "keyHtml": "ZFJ-8",
+                    "img": "/download/resources/com.thed.zephyr.je/images/icons/ico_zephyr_issuetype.png",
+                    "summary": "<b>test2</b>",
+                    "summaryText": "test2"
+                }
+            ]
+        }
+    ]
+}
+
+--
+SystemInfo Resource API(s)
+Following section describes the rest resources pertaining to SystemInfoResource
+--
+
+Retrieve System Information.
+GET /systemInfo
+< 200
+< Content-Type: application/json
+{
+    "zfj_build": "1416",
+    "customerId": "Zephyr",
+    "jira_db_type": "mysql",
+    "licenseDescription": "Plugin license for Zephyr testing",
+    "zfj_version": "2.0.0",
+    "jira_app_server": "Apache Tomcat",
+    "jira_db_build": "6095",
+    "jira_version": "6.0"
+}
+
+
+--
+ZAPI Resource API(s)
+Following section describes the rest resources pertaining to ZAPIResource
+--
+
+Retrieve ZAPI module Information.
+GET /moduleInfo
+< 200
+< Content-Type: application/json
+{
+    "status": "ENABLED"
+}
+
+
+--
+Audit Resource API(s)
+Following section describes the rest resources pertaining to AuditResource
+--
+
+Retrieve Change history by QueryParams.
+
+QueryParam(s): limit [20], offset [0], entityType, event.
+GET /audit
+{
+    "limit": 20,
+    "offset": 0
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "entityId": "12",
+        "entityType": "STEPRESULT",
+        "entityEvent": "STEPRESULT_ATTACHMENT_ADDED",
+        "auditItems": {
+            "id": 363,
+            "field": "ATTACHMENT",
+            "newValue": "mng_execution_filters.png"
+        },
+        "creationDate": "21/Oct/13",
+        "executionId": "25",
+        "creator": "admin"
+    },
+    {
+        "entityId": "28",
+        "entityType": "STEPRESULT",
+        "entityEvent": "STEPRESULT_UPDATED",
+        "auditItems": {
+            "id": 364,
+            "field": "STATUS",
+            "oldValue": "-1",
+            "newValue": "1"
+        },
+        "creationDate": "21/Oct/13",
+        "executionId": "34",
+        "creator": "admin"
+    },
+    {
+        "entityId": "28",
+        "entityType": "STEPRESULT",
+        "entityEvent": "STEPRESULT_UPDATED",
+        "auditItems": {
+            "id": 382,
+            "field": "STEP_DEFECT",
+            "oldValue": "",
+            "newValue": "10700"
+        },
+        "creationDate": "21/Oct/13",
+        "executionId": "34",
+        "creator": "admin"
+    },
+    {
+        "entityId": "29",
+        "entityType": "STEPRESULT",
+        "entityEvent": "STEPRESULT_UPDATED",
+        "auditItems": {
+            "id": 365,
+            "field": "STATUS",
+            "oldValue": "-1",
+            "newValue": "1"
+        },
+        "creationDate": "21/Oct/13",
+        "executionId": "34",
+        "creator": "admin"
+    }
+    {...}
+]
+
+
+Retrieve Change history by QueryParams.
+
+QueryParam(s): limit [20], offset [0], entityType, event.
+
+enitityType: Cycle, Execution, StepResult, Step.
+
+event: Cycle Updated, Cycle Deleted, Execution Updated, Execution Deleted, Execution Attachment Added, Execution Attachment Deleted, Step Result Updated, Step Result Attachment Added, Step Result Attachment Deleted, Step Updated, Step Deleted.
+GET /audit
+{
+    "limit": 20,
+    "offset": 0,
+    "entityType": "CYCLE",
+    "event": "CYCLE_UPDATED"
+}
+< 200
+< Content-Type: application/json
+[
+    {
+        "entityId": "1",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 305,
+            "field": "NAME",
+            "oldValue": "tc1",
+            "newValue": "Audit Test Cycle"
+        },
+        "creationDate": "17/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    },
+    {
+        "entityId": "1",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 306,
+            "field": "DESCRIPTION",
+            "newValue": "Audit Test Cycle"
+        },
+        "creationDate": "17/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    },
+    {
+        "entityId": "3",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 308,
+            "field": "START_DATE",
+            "newValue": "1382034600000"
+        },
+        "creationDate": "18/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    },
+    {
+        "entityId": "3",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 309,
+            "field": "NAME",
+            "oldValue": "tc2",
+            "newValue": "Audit Test Cycle 2"
+        },
+        "creationDate": "18/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    },
+    {
+        "entityId": "3",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 310,
+            "field": "DESCRIPTION",
+            "newValue": "Audit Test Cycle 2"
+        },
+        "creationDate": "18/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    },
+    {
+        "entityId": "3",
+        "entityType": "CYCLE",
+        "entityEvent": "CYCLE_UPDATED",
+        "auditItems": {
+            "id": 311,
+            "field": "END_DATE",
+            "newValue": "1389983400000"
+        },
+        "creationDate": "18/Oct/13",
+        "executionId": "-1",
+        "creator": "admin"
+    }
+]

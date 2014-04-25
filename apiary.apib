@@ -995,13 +995,16 @@ Following section describes the rest resources (API's) pertaining to SearchResou
 --
 Retrieve (Z)ephyr (Q)uery (L)anguage statements based on QueryParams.
 
-QueryParam(s): zqlQuery\*, expand, maxRecords, startIndex.
+QueryParam(s):
+      
+      zqlQuery\*, expand, maxRecords, startIndex.  (2.0, 2.1)
+      zqlQuery\*, expand, maxRecords, offset.  (2.2 or later)
 GET /zql/executeSearch
 > Content-Type: application/json
 {
     "expand": "executionStatus",
     "maxRecords": 0,
-    "startIndex": 0,
+    "offset": 0,
     "zqlQuery": "executionStatus != 'UNEXECUTED' AND executedBy = admin"
 }
 < 200

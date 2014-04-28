@@ -1178,11 +1178,15 @@ GET /zql/autoCompleteZQLJson
 
 --
 Attachment Resource API(s)
-Following section describes the rest resources (API's) pertaining to AttachmentResource
+Following section describes the rest resources (API's) for fetching and uploading attachments.  
+To get attchment for a given entity (Execution or Its Stepresults) or upload, You would need its  
+id : Unique Identifier in DB  
+Type : `execution | stepresult`
+
 --
 Retrieve attachment by Entity.
 
-QueryParam(s): entityId, entityType.
+QueryParam(s): entityId, entityType `execution | stepresult`.
 GET /attachment/attachmentsByEntity
 > Content-Type: application/json
 { 
@@ -1207,7 +1211,6 @@ GET /attachment/attachmentsByEntity
 
 Retrieve attachment by Entity.
 
-QueryParam(s): entityId, entityType.
 GET /attachment/attachmentsByEntity
 > Content-Type: application/json
 { 
@@ -1231,7 +1234,8 @@ GET /attachment/attachmentsByEntity
 }
 
 
-Delete attachment by id\*.
+Delete attachment by id\*.  
+id : id of this attachment as retrieved in GET call 
 DELETE /attachment/{id}
 { 
   "id": 5
@@ -1243,6 +1247,9 @@ DELETE /attachment/{id}
 
 
 Add Attachment by Entity
+
+Post Params: entityType `execution | stepresult`.
+
 POST /attachment{?entityId,entityType}
 > Content-Type: multipart/form-data
 { 
